@@ -2,6 +2,7 @@ const knex = require('knex');
 const knexConfig = require('../knexfile.js');
 const db = knex(knexConfig.development);
 
+// these are the database functions
 module.exports = {
   find,
   findById,
