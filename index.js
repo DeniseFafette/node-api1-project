@@ -6,21 +6,29 @@
 // require express and import the express package
 // import database
 // create the server
-// set server to listen on a port
+// set server to listen on a port - why is {} uses/not used?
 
 const express = require('express'); 
 const db = require('./data/db.js'); 
 const server = express(); 
-server.listen(3000, () => console.log('server on 3000'));
+server.listen(3000, () => console.log('server is listening on port 3000'));
 
 
 // write a route - starting with the simplest query - a GET request
 // console.log the output of db.find to get the users and res.end so the request does not go on continuously
-//        route          callback function
+//        route          callback function and put request in a promise - note (200) = good
+
 server.get('/api/users', (req, res) => {
-    console.log(db.find());
-    res.end();
-}) 
+    db.find()
+        .then(users => res.status(200).json(users));
+});
+
+server.get('/api/users/:id', (req, res) => {
+    const id = req.params.id;
+    db.findById(id)
+        .then(user => res.status(200).json(user));
+    //console.log(req.params);
+});
 
 server.post('/api/users', (req, res) => {
     db.insert(req.body)
@@ -32,12 +40,8 @@ server.post('/api/users', (req, res) => {
     })
   })
   
-  server.listen(port, ( ) => {
-      console.log('hello from server')
-  })
 
-// a port we will watch from traffic
-//const port = 3000; 
+
 //server.use(express.json())
 
 
