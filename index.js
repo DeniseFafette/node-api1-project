@@ -74,6 +74,7 @@ server.delete('/api/users/:id', (req, res) => {
     const { id } = req.params;
     db.remove(id)
         .then(deleted => {
+            console.log(deleted);
             if (deleted) {
                 res.status(204).end();
             } else {
@@ -83,6 +84,31 @@ server.delete('/api/users/:id', (req, res) => {
         .catch(err => {
             console.log(err);
             res.status(500).json({error: 'Server error deleting user'});
+    });
+});
+
+server.put('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    const { name, bio } = req.body;
+    if (!name && !bio) {
+        res.status(400).json({error: 'Some changes are required'});
+    }
+    db.update(id, { name, bio })
+        .then(updated => {
+            if (updated) {
+                db.findById(id)
+                .then(user => res.status(200).json(user))
+                .catch(err => {
+                    console.log(err);
+                    res.status(500).json({error: 'Error retrieving user'});
+                });
+            } else {
+                res.status(404).json({error: `User with id ${id} not found`});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: 'Error updating user.'});
     });
 });
   
