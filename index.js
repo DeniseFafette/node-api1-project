@@ -32,6 +32,9 @@ server.get('/api/users', (req, res) => {
 server.post('/api/users', (req, res) => {
     console.log(req.body);
     const user = req.body;
+    if (!name || !bio) {
+        res.status(400).json({error: "Name and Bio are required!"});
+    }
     db.insert(user)
     .then(({ id }) => {
         db.findById(id)
@@ -67,7 +70,21 @@ server.get('/api/users/:id', (req, res) => {
 
 });
 
-
+server.delete('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    db.remove(id)
+        .then(deleted => {
+            if (deleted) {
+                res.status(204).end();
+            } else {
+                res.status(404).json({error: 'User with ID does not exist'});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: 'Server error deleting user'});
+    });
+});
   
 
 
